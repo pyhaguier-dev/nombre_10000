@@ -1,0 +1,494 @@
+   
+       <!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+    
+        
+<title>Grabovoi 10000</title>
+  
+<style>
+
+body{
+    margin:0;
+    overflow:hidden;
+    background:white;
+    font-family:Arial,sans-serif;
+}
+
+
+
+/* SPHERE */
+
+
+#sphere{
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100vw;
+    height:100vh;
+
+    overflow:hidden;
+}
+ 
+
+
+.sphereItem{
+    position:absolute;
+    left:50%;
+    transform:translate(-50%,-50%);
+    white-space:nowrap;
+    //font-weight:bold;
+}
+
+
+#openTime {
+   
+ position: fixed;
+    bottom: 2px;
+    right: 5px;
+    font-size: 4px;
+    color: white;
+    opacity: 0.7;
+
+}
+
+</style>
+</head>
+
+<body>
+
+
+<div id="sphere"></div>
+<div id="openTime"></div>
+
+<script>
+
+// ======================================
+// DATA
+// ======================================
+ const numbers = [319817318,71381921,"818 8849482167",548491698719,1489999,19712893,"c43h66n12o12s2",918948181,1814321,5893240,"81891 88888 4149","28 7 741",97317819,"8901 678 914 81",8214351,"591 718 9181419","399016488 917","314821069 711",14111963,88889888878888,396815,816498917314,5186923,"1847 8198 7181",91371985,918197185,5148123,9888772988,1884321,88888488888,8888,100110510,7819019425,71042,7193718,14888948,"19 725 181","419 488 71",1888948,915777918934198,514319893714,917489718,819471,19751,"451 618 719 481",918714,2145432,817992191,"519 7148 741",2213445,1488514,5148584,6189699,"586 20 43","519 606 901 319","519 7148",11981,1257814,9187948181,48145488,548111,5823214,"598 788 428 317","519 418 319 818","219 648 317 918",514891,7794218,"898 898 478 213",9198310917,"518 5213",8124567,5484214,5484548,8125432,9988771,697706258,81234574,5843218,8123457,51631982198491,88888588888,"219 318 219 471","889 314 219 798",4512333,48111111,"519 317 219 416",1823451,"50816 121 0981",58332638337,1891014,"514 317 814 917","519 321 819 221",514854249,548132198,210250300,2937853,"419 312 819 212",71931,51931741948,"51 948 191 711 81","598061 319781",8345444,548317489417,"614 318171 8914218",51949131948,"61 988 184 161",147,"498716988 079","891 019 4918808",71381921,287,"214 5432",8542106,1895678,1258912,419312819212,"E = VS 10⁻¹⁷",498712891319,"59 189 171 481",5481321,"312 218 212 918","498 217 218 227","214 217 000 819",498217218227,214217000819,589648389991,4812412,31749318516,"513964818 91","938 179",42674658725,"4456 675","829 379 1429",8142543,"C990H1S28N262O300S7",5123481,51951348988,4748132148,9274810494,719,514,12746391,8941254,548821,1485454,1456891,8851464,598617918491,1489991,"917 489 718",5484121,491519619,77119784121,54812145489,36854129871,81949121748,"498 1943 1947","33 48452",37528084,67842553,18545118197,481988491091,4949819179,91801841,8121596,21489419518,81421435617,53814811961,8240692,83585179,"22 12 379",51821421728,9718319575148179,"219 214 319 714","485 64871",4812345,48145428,9876512,918879189147,"214 317 498 817","314 815 514 312","518 214 217 28",8432110,8421432,85432104,"918 749 328 081","1258 912 11","8915678 1 1",8124569,9995437,"9888 772 988",519961731194891,49189,"498 716 988 079",8819977,4851421,5454589,5148432,4818888,5121111,3245678,5142585,"918 712 818 229","589 317 919 877",4881431,5891432,5333353,"518 712 618 44",148543292,"528 419 319718 23",49181951749814,"E = VS","888 912 818848",285555901,218914819,"814 418 719",14854232190,148721091,5131482,741,"889 8",1231115025];
+
+const colors = [
+
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "blue",
+    "indigo",
+    "violet"
+    
+];
+
+// ======================================
+// SPHERE
+// ======================================
+
+const levelCount = 60;
+const verticalSpread = 1.15;
+let sphereItems = [];
+
+let dataIndex = 0;
+
+let phase = 0;
+
+let lastMove = 0;
+
+let colorIndex = 0;
+let previousDirection = 1;
+
+// ======================================
+// CREATE ITEM
+// ======================================
+function nextIndex(i){
+
+    return (
+        i + 1
+    ) % numbers.length;
+}
+
+function prevIndex(i){
+
+    return (
+        i - 1 +
+        numbers.length
+    ) % numbers.length;
+}
+function createTopItem(){
+
+    let newIndex;
+
+    if(
+        sphereItems.length === 0
+    ){
+        newIndex = 0;
+    }
+    else{
+
+        newIndex =
+            nextIndex(
+                sphereItems[0].index
+            );
+    }
+
+    sphereItems.unshift({
+
+        index:
+            newIndex,
+
+        value:
+            String(
+                numbers[newIndex]
+            ),
+
+        color:
+            colors[colorIndex],
+
+        level : 0
+
+    });
+
+    colorIndex =
+        (colorIndex + 1)
+        %
+        colors.length;
+}
+// ======================================
+// DRAW
+// ======================================
+
+
+
+function drawSphere(){
+console.log(
+    sphereItems[0]?.index,
+    sphereItems[
+        sphereItems.length - 1
+    ]?.index
+);
+    const sphere =
+        document.getElementById(
+            "sphere"
+        );
+
+    sphere.innerHTML = "";
+
+    const sphereHeight =
+        sphere.clientHeight;
+
+    sphereItems.forEach(item => {
+
+        const div =
+            document.createElement(
+                "div"
+            );
+
+        div.className =
+            "sphereItem";
+
+        div.innerText =
+            item.value;
+
+        div.style.color =
+            item.color;
+
+      
+const lineHeight = 36;
+
+const y =
+     -10 +
+ item.level * lineHeight;
+
+
+        div.style.top =
+            y + "px";
+
+        div.style.left =
+            "50%";
+
+        div.style.transform =
+            "translate(-50%,-50%)";
+
+        const length =
+            String(
+                item.value
+            ).length;
+
+        const fontSize =
+            Math.max(
+              
+           
+
+  18,
+        36 - length * 0.5
+
+
+            );
+
+      div.style.fontSize = "24px";
+// div.style.fontSize =
+ //           fontSize + "px";
+       sphere.appendChild(div);
+
+    });
+}
+
+
+
+// ======================================
+// MOVEMENT
+// ======================================
+
+
+function moveForward(step){
+
+    sphereItems.forEach(item=>{
+        item.level += step;
+    });
+
+    sphereItems =
+        sphereItems.filter(
+            item => item.level < levelCount
+        );
+
+    if(
+        sphereItems.length === 0 ||
+        sphereItems[0].level >= 1
+    ){
+        createTopItem();
+    }
+}
+
+
+function moveBackward(step){
+
+    sphereItems.forEach(item=>{
+        item.level -= step;
+    });
+
+    sphereItems =
+        sphereItems.filter(
+            item => item.level >= 0
+        );
+
+    if(
+        sphereItems.length === 0 ||
+        sphereItems[sphereItems.length-1].level <= levelCount-2
+    ){
+
+      
+colorIndex =
+    (
+        colorIndex - 1 +
+        colors.length
+    )
+    %
+    colors.length;
+
+
+const newIndex =
+
+    sphereItems.length === 0
+    ? 0
+    : prevIndex(
+        sphereItems[
+            sphereItems.length - 1
+        ].index
+    );
+
+sphereItems.push({
+
+    index:
+        newIndex,
+
+    value:
+        String(
+            numbers[newIndex]
+        ),
+
+    color:
+        colors[colorIndex],
+
+    level:
+        levelCount - 1
+
+});
+
+    }
+}
+
+// ======================================
+// SINUSOID
+// ======================================
+
+function loop(timestamp){
+
+ 
+const cycleDuration = 177.6043360433;
+
+
+    phase +=
+      (1.387533*Math.PI)
+             /
+        (cycleDuration * 60);
+
+    const wave =
+        Math.sin(
+            phase
+        );
+
+    const direction =
+        wave >= 0
+        ? 1
+        : -1;
+if(
+    direction > 0 &&
+    previousDirection < 0
+){
+
+   const bottomItem =
+    sphereItems[
+        sphereItems.length - 1
+    ];
+
+
+
+    const visibleIndex =
+        numbers.indexOf(
+            bottomItem.value
+        );
+
+    if(visibleIndex >= 0){
+
+        
+    }
+}
+
+previousDirection = direction;
+
+ const speed =
+        Math.abs(
+            wave
+        );
+           
+
+
+const minInterval = 86.72086; 
+const maxInterval = 173.44173; 
+
+const equivalentInterval =
+    maxInterval -
+    speed *
+    (
+        maxInterval -
+        minInterval
+    );
+
+const step =
+    30 / equivalentInterval;
+
+
+if(direction > 0){
+    moveForward(step);
+}
+else{
+    moveBackward(step);
+}
+
+drawSphere();
+
+requestAnimationFrame(
+    loop
+);
+}
+
+// ======================================
+// FULLSCREEN
+// ======================================
+
+function enterFullscreen(){
+
+    if(
+      !document.fullscreenElement
+    ){
+
+        document
+        .documentElement
+        .requestFullscreen()
+        .catch(()=>{});
+    }
+}
+
+document.addEventListener(
+    "click",
+    enterFullscreen,
+    {once:true}
+);
+
+document.addEventListener(
+    "touchstart",
+    enterFullscreen,
+    {once:true}
+);
+
+// ======================================
+// START
+// ======================================
+
+window.addEventListener(
+    "load",
+    ()=>{
+keepScreenAwake();
+
+  const openedAt = new Date();
+    document.getElementById("openTime").textContent =
+        openedAt.toLocaleString();    
+
+
+
+createTopItem();
+drawSphere();
+
+        requestAnimationFrame(
+            loop
+        );
+    }
+);
+      
+let wakeLock = null;
+
+async function keepScreenAwake() {
+    try {
+        wakeLock = await navigator.wakeLock.request("screen");
+
+        wakeLock.addEventListener("release", () => {
+            console.log("Wake Lock released");
+        });
+
+        console.log("Screen Wake Lock active");
+
+    } catch (err) {
+        console.log("Wake Lock error:", err);
+    }
+}
+
+document.addEventListener("visibilitychange", async () => {
+
+    if (
+        wakeLock !== null &&
+        document.visibilityState === "visible"
+    ) {
+        await keepScreenAwake();
+    }
+
+});
+
+</script>
+
+</body>
+</html>  
